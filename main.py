@@ -1,20 +1,26 @@
 import requests
 import re
 import time
-import numpy as np
-import pandas as pd
+import sys
 
-df = pd.read_csv("links.csv")
+
+arg1 = "links.txt"
+arg2 = "results.csv"
+if len(sys.argv) > 1:
+        arg1 = sys.argv[1]
+        if len(sys.argv) > 2:
+            arg2 = sys.argv[2]
+links = open(arg1, "r").read().splitlines()
 
 
 def get_links():
     link_list = []
-    for i in df["Unnamed: 5"]:
-        if type(i) is str and i[0:4] == "http":
+    for i in links:
+        if "http" in i:
             link_list.append(i)
         else:
             link_list.append(0)
-
+            
     return link_list
 
 def count_keywords():
@@ -23,18 +29,19 @@ def count_keywords():
     key_words = ["non-gaap", "adjusted earnings", "ebitda", "adjusted net income", "non-ifrs"]
     url_list = get_links()
 
+    f = open(arg2, "w")
     for i in range(len(url_list)):
         result_list = []
-        time.sleep(0.25)
+        time.sleep(0.2)
         url = url_list[i]
         row = ''
         if url != 0:
             request = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}) 
             text = request.text
-            text = re.sub("<[^<]+?>", "", text)
-            text = re.sub("[^a-zA-Z\d\s\u00C0-\u00FF]{2,}", "", text)
-            text = re.sub("\n+", "\n", text)
-            text = re.sub(" +", " ", text)
+#            text = re.sub("<[^<]+?>", "", text)
+#            text = re.sub("[^a-zA-Z\d\s\u00C0-\u00FF]{2,}", "", text)
+#            text = re.sub("\n+", "\n", text)
+#            text = re.sub(" +", " ", text)
             text = text.lower()
             for j in key_words:
                 count = text.count(j)
@@ -44,34 +51,14 @@ def count_keywords():
             for i in range(len(key_words)):
                 result_list = [""]
         
-        f = open("planilha.csv", "a")
+
         for i in range(len(result_list)):
             row = row + str(result_list[i]) + ","
         print(row[:-1])
         f.write(row[:-1]+"\n")
+    f.close()
     return 
 
 
+
 count_keywords()
-#results.to_csv("planilha.csv")
-
-
-
-
-
-
-
-
-
-#text = open("page.txt", "r").read()
-#text = re.sub("\t+", " ", text)
-#with open('page.txt', 'w') as f:
-#    f.write(text)
-#text = re.sub("\n", "", text)
-#print(text)
-#print(re.sub("[^a-zA-Z0-9_ ]+", "", text))
-#print(re.sub("<.*?>|<.*=|\n| ", "", r.text))
-#print(re.sub("<.*=|\n|<.*?>| ", "", r.text))
-#print(re.sub("</a>|</span>|</div>|</body>|</html>|<a>|<span>|<div>|<body>|<html>|<head>|</button>|<buttonname=|divclass|</p>|<p>|</li>|<li>|><|type =| |\n", "", r.text))
-#print(re.sub("<.*?>|\n|<.*?=| ", "", r.text))
-#print(re.sub("|<.*?=|<.*?>", "", r.text))

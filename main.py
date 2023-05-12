@@ -38,19 +38,10 @@ def count_keywords():
         if url != 0:
             request = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}) 
             text = request.text
-#            text = re.sub("<[^<]+?>", "", text)
-#            text = re.sub("[^a-zA-Z\d\s\u00C0-\u00FF]{2,}", "", text)
-#            text = re.sub("\n+", "\n", text)
-#            text = re.sub(" +", " ", text)
             text = text.lower()
             for j in key_words:
                 count = text.count(j)
                 result_list.append(count)
-
-        if len(result_list) == 0:
-            for i in range(len(key_words)):
-                result_list = [""]
-        
 
         for i in range(len(result_list)):
             row = row + str(result_list[i]) + ","

@@ -1,35 +1,42 @@
-import requests
 import re
 import time
 import sys
+import os
+import requests
 
-
-arg1 = "links.txt"
-arg2 = "results.csv"
-if len(sys.argv) > 1:
-        arg1 = sys.argv[1]
-        if len(sys.argv) > 2:
-            arg2 = sys.argv[2]
-links = open(arg1, "r").read().splitlines()
-
-
+    
 def get_links():
     link_list = []
+    try:
+        arg1 = os.path.join(os.path.dirname(os.path.abspath(__file__)),"links.txt")
+    except Exception as error:
+        print(error)
+        input("")
+    arg2 = "results.csv"
+    if len(sys.argv) > 1:
+            arg1 = sys.argv[1]
+            if len(sys.argv) > 2:
+                arg2 = sys.argv[2]
+    try:
+        links = open(arg1, "r").read().splitlines()
+    except Exception as error:
+        print(error)
+        input("")
     for i in links:
         if "http" in i:
             link_list.append(i)
         else:
             link_list.append(0)
             
-    return link_list
+    return link_list, arg1, arg2
 
 def count_keywords():
     
     result_list = []
-    key_words = ["non-gaap", "adjusted earnings", "ebitda", "adjusted net income", "non-ifrs"]
-    url_list = get_links()
+    key_words =  open(os.path.join(os.path.dirname(os.path.abspath(__file__)),"keywords.txt")).read().splitlines()
+    url_list, arg1, arg2 = get_links()
 
-    f = open(arg2, "w")
+    f = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), arg2), "w+")
     for i in range(len(url_list)):
         result_list = []
         time.sleep(0.2)
@@ -51,5 +58,7 @@ def count_keywords():
     return 
 
 
-
-count_keywords()
+try:
+    count_keywords()
+except Exception as error:
+    print(error)
